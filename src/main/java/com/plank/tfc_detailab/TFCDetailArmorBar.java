@@ -6,6 +6,7 @@ import com.redlimerl.detailab.api.render.TextureOffset;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
@@ -14,6 +15,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 
 @Mod(TFCDetailArmorBar.MODID)
@@ -38,6 +40,7 @@ public class TFCDetailArmorBar {
                     .complexAllEquipment("red_steel")
                     .complexAllEquipment("steel")
                     .complexAllEquipment("wrought_iron")
+                    .complexAllEquipment("purple_steel")
                     .build();
 
             modCompats.forEach((armor, info) ->
@@ -54,8 +57,9 @@ public class TFCDetailArmorBar {
     }
     public static ArmorItem getArmor(String type, String metal) {
         // 将字符串路径转换为ResourceLocation
-        ResourceLocation itemLocation = ResourceLocation.tryParse("tfc:metal/" + type + "/" + metal);
-
+        ResourceLocation itemLocation;
+        itemLocation = ResourceLocation.tryParse("tfc:metal/" + type + "/" + metal);
+        if(Objects.equals(metal, "purple_steel")) itemLocation = ResourceLocation.tryParse("rosia:purple_steel_" + type);
         if (itemLocation == null) {
             throw new IllegalArgumentException("无效的物品路径: " + metal);
         }
@@ -72,15 +76,20 @@ public class TFCDetailArmorBar {
 
     public static ArmorItem[] getArmorForMetal(String metal) {
         ArmorItem[] armorItems = new ArmorItem[4];
-        armorItems[0] = getArmor("helmet", metal);
-        armorItems[1] = getArmor("chestplate", metal);
-        armorItems[2] = getArmor("greaves", metal);
-        armorItems[3] = getArmor("boots", metal);
+        if (getArmor("helmet", metal) != Items.AIR){
+            armorItems[0] = getArmor("helmet", metal);
+            armorItems[1] = getArmor("chestplate", metal);
+            armorItems[2] = getArmor("greaves", metal);
+            armorItems[3] = getArmor("boots", metal);
+        }
         return armorItems;
     }
 
-    private static ResourceLocation textureId(String path) {
-        return new ResourceLocation(MODID, "textures/gui/sprites/hud/tfc/" + path + ".png");
+    private static ResourceLocation textureId(String metal) {
+        String path;
+        path = "tfc/" + metal;
+        if(metal.equals("purple_steel")) path = "rosia/purple_steel";
+        return new ResourceLocation(MODID, "textures/gui/sprites/hud/" + path + ".png");
     }
 
     public static class CompatBuilder {
