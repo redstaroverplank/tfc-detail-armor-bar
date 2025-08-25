@@ -61,14 +61,14 @@ public class TFCDetailArmorBar {
         itemLocation = ResourceLocation.tryParse("tfc:metal/" + type + "/" + metal);
         if(Objects.equals(metal, "purple_steel")) itemLocation = ResourceLocation.tryParse("rosia:purple_steel_" + type);
         if (itemLocation == null) {
-            throw new IllegalArgumentException("无效的物品路径: " + metal);
+            return null;
         }
 
         // 从物品注册表中获取Item对象
         Item item = ForgeRegistries.ITEMS.getValue(itemLocation);
 
-        if (item == null) {
-            throw new IllegalArgumentException("未找到对应物品: " + metal);
+        if (item == Items.AIR) {
+            return null;
         }
 
         return (ArmorItem) item;
@@ -76,12 +76,10 @@ public class TFCDetailArmorBar {
 
     public static ArmorItem[] getArmorForMetal(String metal) {
         ArmorItem[] armorItems = new ArmorItem[4];
-        if (getArmor("helmet", metal) != Items.AIR){
-            armorItems[0] = getArmor("helmet", metal);
-            armorItems[1] = getArmor("chestplate", metal);
-            armorItems[2] = getArmor("greaves", metal);
-            armorItems[3] = getArmor("boots", metal);
-        }
+        armorItems[0] = getArmor("helmet", metal);
+        armorItems[1] = getArmor("chestplate", metal);
+        armorItems[2] = getArmor("greaves", metal);
+        armorItems[3] = getArmor("boots", metal);
         return armorItems;
     }
 
@@ -177,31 +175,6 @@ public class TFCDetailArmorBar {
 
             public Builder setLocation(ResourceLocation location) {
                 this.location = location;
-                return this;
-            }
-
-            public Builder setSize(int size) {
-                this.size = size;
-                return this;
-            }
-
-            public Builder setFullOffset(int x, int y) {
-                this.fullOffset = Map.entry(x,y);
-                return this;
-            }
-
-            public Builder setHalfOffset(int x, int y) {
-                this.halfOffset = Map.entry(x,y); // 修复：赋值给halfOffset
-                return this;
-            }
-
-            public Builder setFullOutlineOffset(int x, int y) {
-                this.fullOutlineOffset = Map.entry(x,y); // 修复：赋值给fullOutlineOffset
-                return this;
-            }
-
-            public Builder setHalfOutlineOffset(int x, int y) {
-                this.halfOutlineOffset = Map.entry(x,y); // 修复：赋值给halfOutlineOffset
                 return this;
             }
 
